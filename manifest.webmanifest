@@ -1,0 +1,30 @@
+{
+  "name": "令和将棋",
+  "short_name": "令和将棋",
+  "description": "爆の駒を投げて玉将をふっとばす、一発勝負の将棋バカゲー。",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#17162a",
+  "theme_color": "#17162a",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
