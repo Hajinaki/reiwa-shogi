@@ -236,16 +236,16 @@ const STAGES=[
   build(){const b=mkBoard({});S.boards.push(b);const R=rng(7),pool=['歩','歩','歩','歩','と','香','桂','銀','金','角','飛'];
    for(let r=0;r<6;r++)for(let c=0;c<9;c++){if(c===8&&r===0){addPiece(b,c,r,'玉');continue;}if((c===7&&r<2)||(c===8&&r===1)){addPiece(b,c,r,c===7&&r===0?'金':'銀');continue;}if(R()<.12)continue;addPiece(b,c,r,pool[Math.floor(R()*pool.length)]);}
    setPlayer(b,4,8);S.maxRange=12.5;}},
- {name:'大戦場',desc:'見渡すかぎりの大戦場。玉将はこの中のどこかにいる。',aim:.6,pow:.5,blast:1.8,
-  build(){const b=mkBoard({cols:40,rows:40,cell:1,x0:-20,z0:0});S.boards.push(b);
-   const K=['歩','歩','歩','香','桂','銀','金','角','飛','と'],used=new Set(),put=(c,r,k)=>{if(c<0||c>39||r<0||r>36||used.has(c+','+r))return null;used.add(c+','+r);return addPiece(b,c,r,k);};
-   const squads=[];for(let i=0;i<9;i++)squads.push([3+Math.floor(Math.random()*34),1+Math.floor(Math.random()*28)]);const ks=Math.floor(Math.random()*squads.length);
-   squads.forEach(([c,r],i)=>{if(i===ks){put(c,r,'玉');for(const[dc,dr,k]of[[-1,0,'金'],[1,0,'金'],[0,1,'銀'],[-1,1,'歩'],[1,1,'歩'],[0,-1,'香']])put(c+dc,r+dr,k);}
-     else{const n=5+Math.floor(Math.random()*5);for(let j=0;j<n;j++)put(c+Math.floor(Math.random()*5)-2,r+Math.floor(Math.random()*4)-1,K[Math.floor(Math.random()*K.length)]);}});
-   for(let i=0;i<25;i++)put(Math.floor(Math.random()*40),Math.floor(Math.random()*36),K[Math.floor(Math.random()*K.length)]);
-   for(const pc of S.pieces)pc.size*=1.7;setPlayer(b,20,39);S.maxRange=46;S.frame={w:40,zN:0,zF:40,hMul:2.4,top:.07,bot:.8};}},
  {name:'動く玉将',desc:'玉将が盤の上をうろうろしている。',aim:.7,pow:.8,blast:1.35,
   build(){const b=mkBoard({});S.boards.push(b);stdSetup(b,{noKing:true,noPawns:true});S.mover=addPiece(b,4,1,'玉');setPlayer(b,4,8);S.maxRange=12;}},
+ {name:'大戦場',desc:'見渡すかぎりの大戦場。玉将はこの中のどこかにいる。',aim:.6,pow:.55,blast:1.6,
+  build(){const b=mkBoard({cols:20,rows:20,cell:1,x0:-10,z0:0});S.boards.push(b);
+   const K=['歩','歩','歩','香','桂','銀','金','角','飛','と'],used=new Set(),put=(c,r,k)=>{if(c<0||c>19||r<0||r>16||used.has(c+','+r))return null;used.add(c+','+r);return addPiece(b,c,r,k);};
+   const squads=[];for(let i=0;i<6;i++)squads.push([2+Math.floor(Math.random()*16),1+Math.floor(Math.random()*13)]);const ks=Math.floor(Math.random()*squads.length);
+   squads.forEach(([c,r],i)=>{if(i===ks){put(c,r,'玉');for(const[dc,dr,k]of[[-1,0,'金'],[1,0,'金'],[0,1,'銀'],[-1,1,'歩'],[1,1,'歩'],[0,-1,'香']])put(c+dc,r+dr,k);}
+     else{const n=4+Math.floor(Math.random()*4);for(let j=0;j<n;j++)put(c+Math.floor(Math.random()*5)-2,r+Math.floor(Math.random()*4)-1,K[Math.floor(Math.random()*K.length)]);}});
+   for(let i=0;i<10;i++)put(Math.floor(Math.random()*20),Math.floor(Math.random()*16),K[Math.floor(Math.random()*K.length)]);
+   for(const pc of S.pieces)pc.size*=1.3;setPlayer(b,10,19);S.maxRange=24;S.frame={w:20,zN:0,zF:20,hMul:1.8,top:.08,bot:.78};}},
  {name:'新人門番',desc:'新人門番の太助「玉将はおいらが守るッス！」',aim:.65,pow:.75,blast:1,
   build(){const b=mkBoard({});S.boards.push(b);stdSetup(b,{centerKing:true,noPawns:true});setPlayer(b,4,8);S.maxRange=12;
    const K=S.pieces.find(p=>p.king),T={k:'太',x:K.x,y:0,z:K.z-1.3,size:2.4,enemy:true,king:false,stand:true,tasuke:true,vx:0,vy:0,vz:0,rot:0,vr:0,flying:false};S.pieces.push(T);
@@ -419,7 +419,7 @@ function buildStage(i){
 function floorAt(x,z){for(const b of S.boards){if(x>=b.x0&&x<=b.x0+b.cols*b.cell&&z>=b.z0&&z<=b.z0+b.rows*b.cell)return b.y||0;}return -.4;}
 function notate(x,z){
   for(const b of S.boards){if(b.role==='mine')continue;const c=Math.floor((x-b.x0)/b.cell),rr=Math.floor((z-b.z0)/b.cell);
-    if(c>=0&&c<b.cols&&rr>=0&&rr<b.rows){const r=b.rows-1-rr;if(b.type==='othello')return '着弾 '+'abcdefgh'[c]+(r+1);return '▲'+FW[b.cols-c]+kan(r+1)+'爆';}}
+    if(c>=0&&c<b.cols&&rr>=0&&rr<b.rows){const r=b.rows-1-rr;if(b.type==='othello')return '着弾 '+'abcdefgh'[c]+(r+1);return '▲'+String(b.cols-c).replace(/[0-9]/g,d=>FW[d])+kan(r+1)+'爆';}}
   return '盤外';
 }
 
@@ -538,12 +538,12 @@ function showResult(){
   if(S.win){
     sfx.win();unlock(S.idx+1);if(last&&!rtaOpen){rtaOpen=true;rtaNew=true;try{localStorage.setItem('reiwa-shogi-cleared','1');}catch(e){}}
     const head=last?`全${kan(NST)}局 制覇`:'';
-    const line=last?'将棋っておもしろい！':['お手本どおりの一発。王手。','穴熊を引きずり出した。','スナイパーの一撃であった。','玉将は動き回らない方がいい。','太助は解雇となった','先手必勝。','水中にも逃げ場はない。','蜂はただ飛んでいただけだった。','王権は崩壊した。','頭上ががら空きだった。','記憶力の勝利。','将棋に馴れ合いなど不要。','闇の中の一点を撃ち抜いた。','玉将はまるわかりだ。','白黒はっきりついたようだ','敵を見失ってはいけない。','卑怯者には敗北の味がお似合いだ。','全消しで大逆転。フィーバー！','たむろしてはいけない。','過去を振り払った。爆とともに、前へ。','お買い上げありがとうございました。','大将、おあいそ！','穴熊は得意なんだ','盤はすべてを見ていた。','迎撃完了。','退学処分となった','香車ちゃんは、まっすぐこちらへ走ってきた。','怪しい広告には気を付けよう！','玉将、KO！ と金コーチ「今日のラーメンは爆盛りだ！」',''][S.idx];
+    const line=last?'将棋っておもしろい！':['お手本どおりの一発。王手。','穴熊を引きずり出した。','玉将は動き回らない方がいい。','スナイパーの一撃であった。','太助は解雇となった','先手必勝。','水中にも逃げ場はない。','蜂はただ飛んでいただけだった。','王権は崩壊した。','頭上ががら空きだった。','記憶力の勝利。','将棋に馴れ合いなど不要。','闇の中の一点を撃ち抜いた。','玉将はまるわかりだ。','白黒はっきりついたようだ','敵を見失ってはいけない。','卑怯者には敗北の味がお似合いだ。','全消しで大逆転。フィーバー！','たむろしてはいけない。','過去を振り払った。爆とともに、前へ。','お買い上げありがとうございました。','大将、おあいそ！','穴熊は得意なんだ','盤はすべてを見ていた。','迎撃完了。','退学処分となった','香車ちゃんは、まっすぐこちらへ走ってきた。','怪しい広告には気を付けよう！','玉将、KO！ 将棋博士「今日のラーメンは爆盛りだ！」',''][S.idx];
     showOverlay(`<div class="card"><div class="row"><div class="stamp">勝</div><p class="kifu">${S.notation}</p></div>${head?`<h2>${head}</h2>`:''}${line?`<p>${line}</p>`:''}
     <div class="btns">${last?'<button type="button" class="piece" data-act="credits">終局</button>':'<button type="button" class="piece" data-act="next">次の局へ</button>'}<button type="button" class="ghost" data-act="retry">もう一度</button></div></div>`);
   }else{
     sfx.lose();
-    const why={timeout:'戦場にターンなどない。',self:'自分の足元で爆発した。いわゆる自爆。',tower:'ピラミッドは崩れても、ファラオが健在なれば即ち相手の勝ちである。',othello:`白が${S.whitesLeft}枚残った。`,escape:'盤ごと持ち逃げされた。',bee:'刺されることより、相手を先に差せ。',water:'水中戦ははじめてか？',shield:'盾に阻まれた。密集陣形は崩れない。',crushed:'ファランクスに押しつぶされた。',phalanx:'玉将には届かなかった。陣形はまだ前進してくる。',shop:S.shopMsg||'',bride:'香車ちゃんまで吹き飛ばしてしまった…。',wedding:'新郎は無傷のまま、ライスシャワーの中を歩いていった。',caught:'「見ーつけた！」',oni:'外れた。鬼は「だるまさんが…」と数え続けている。',conbini:S.conbiniMsg||'',eye:S.eyeMsg||'',puzzle:S.puzzleMsg||'',domino:S.dominoMsg||'',ad:S.adMsg||'',tasuke:'太助「守りきったッス！」',gate:'外れた。太助「守りきったッス！」',kage:S.kageMsg||'',hanabi:'不発。花火大会は、しょんぼりと幕を閉じた。',hanabishi:'花火師ごと打ち上げてしまった。',door:'「ドアが閉まります」',elev:'玉将「うわなに？」',reject:S.rejectMsg||'',timeup:'「時間です。お帰りください」面接は打ち切られた。',leave:'二人はそのまま、新婚旅行へ旅立った。',album:S.albumMsg||'',boxhit:'玉将の パンチを まともにくらった。と金コーチ「よけろと言っただろう！」',boxguard:'将棋パンチは ガードされた。と金コーチ「スキを待て、スキを！」',boxwrong:'逆によけて、玉将のパンチに飛び込んでしまった。と金コーチ「反対だ、反対！」',friend:'外れた。友達は笑ったまま、まだ近づいてくる。',hug:'肩を組まれた。終わった。',murder:S.murderMsg||'',golf:S.golfMsg||'',guerrilla:S.guerMsg||'',bowl:S.bowlMsg||'',sushi:'玉将はレーンの彼方へ流れていった。',meal:'家族の晩ごはんを吹き飛ばした。',memory:'思い出に気を取られるな。前を向け。',miss:({'0':'棋力が足りなかった。','1':'棋力が足りなかった。','2':'本番では戦場は選べない。','3':'止まった駒だけの将棋に慣れてはいけない','5':'戦場のプレッシャーに負けてはいけない。','10':'眼鏡を変えた方がいい','12':'闇に吞まれた。'})[S.idx]||'玉将には届かなかった。'}[S.reason]||'';
+    const why={timeout:'戦場にターンなどない。',self:'自分の足元で爆発した。いわゆる自爆。',tower:'ピラミッドは崩れても、ファラオが健在なれば即ち相手の勝ちである。',othello:`白が${S.whitesLeft}枚残った。`,escape:'盤ごと持ち逃げされた。',bee:'刺されることより、相手を先に差せ。',water:'水中戦ははじめてか？',shield:'盾に阻まれた。密集陣形は崩れない。',crushed:'ファランクスに押しつぶされた。',phalanx:'玉将には届かなかった。陣形はまだ前進してくる。',shop:S.shopMsg||'',bride:'香車ちゃんまで吹き飛ばしてしまった…。',wedding:'新郎は無傷のまま、ライスシャワーの中を歩いていった。',caught:'「見ーつけた！」',oni:'外れた。鬼は「だるまさんが…」と数え続けている。',conbini:S.conbiniMsg||'',eye:S.eyeMsg||'',puzzle:S.puzzleMsg||'',domino:S.dominoMsg||'',ad:S.adMsg||'',tasuke:'太助「守りきったッス！」',gate:'外れた。太助「守りきったッス！」',kage:S.kageMsg||'',hanabi:'不発。花火大会は、しょんぼりと幕を閉じた。',hanabishi:'花火師ごと打ち上げてしまった。',door:'「ドアが閉まります」',elev:'玉将「うわなに？」',reject:S.rejectMsg||'',timeup:'「時間です。お帰りください」面接は打ち切られた。',leave:'二人はそのまま、新婚旅行へ旅立った。',album:S.albumMsg||'',boxhit:'玉将の パンチを まともにくらった。将棋博士「よけろと言っただろう！」',boxguard:'将棋パンチは ガードされた。将棋博士「スキを待て、スキを！」',boxwrong:'逆によけて、玉将のパンチに飛び込んでしまった。将棋博士「反対だ、反対！」',friend:'外れた。友達は笑ったまま、まだ近づいてくる。',hug:'肩を組まれた。終わった。',murder:S.murderMsg||'',golf:S.golfMsg||'',guerrilla:S.guerMsg||'',bowl:S.bowlMsg||'',sushi:'玉将はレーンの彼方へ流れていった。',meal:'家族の晩ごはんを吹き飛ばした。',memory:'思い出に気を取られるな。前を向け。',miss:({'0':'棋力が足りなかった。','1':'棋力が足りなかった。','2':'止まった駒だけの将棋に慣れてはいけない','3':'本番では戦場は選べない。','5':'戦場のプレッシャーに負けてはいけない。','10':'眼鏡を変えた方がいい','12':'闇に吞まれた。'})[S.idx]||'玉将には届かなかった。'}[S.reason]||'';
     showOverlay(`<div class="card"><div class="row"><div class="stamp lose">負</div><p class="kifu">${S.notation||''}</p></div><p>${why}</p>${S.traj&&S.traj.length&&!S.box?'<canvas class="sidecv" id="sideCv" aria-label="今回の弾道を横から見た図"></canvas>':''}
     <div class="btns"><button type="button" class="piece" data-act="retry">もう一度</button><button type="button" class="ghost" data-act="title">タイトルへ</button></div></div>`);
     // replay the side view inside the result card so the miss can be read after the fact
@@ -798,13 +798,13 @@ function update(dt){
       else if(!st&&!S.win&&P.finalNote&&S.notation!==P.finalNote)S.notation=P.finalNote;
       if(!st&&S.win&&!P.garbage&&puzAllClearPause(P,dt)){P.garbage=[];P.gt=0;for(let c=0;c<6;c++){const h=P.rcols[c].length;for(let r=0;h+r<12;r++){const x=P.rx0+(c+.5)*P.cell,pc={k:'邪',kind:4,block:true,side:'r',x,y:6+r*1.1+Math.random()*.6,z:P.z0+(h+r+.5)*P.cell,size:P.cell*.95,enemy:true,king:false,vx:0,vy:0,vz:0,rot:0,vr:0,flying:false};S.pieces.push(pc);P.garbage.push(pc);}}}}
     if(P.garbage){P.gt+=dt;let all=true;for(const pc of P.garbage){if(pc.y>0){pc.y=Math.max(0,pc.y-dt*16);all=false;}}
-      if(all&&!P.ko&&P.gt>.3){P.ko=true;const R=P.rival;blow(R,R.x,0,R.z-1.2,.7);sfx.boom();S.shake=1;S.flash=1;S.boom={x:R.x,y:0,z:R.z};S.boomT=0;S.notation=P.finalNote||'';S.resultAt=2.6;
-        for(let i=0;i<80;i++){const a=Math.random()*6.283,sp=2+Math.random()*7;S.parts.push({x:R.x,y:.5,z:R.z-.6,vx:Math.cos(a)*sp,vy:2+Math.random()*5,vz:Math.sin(a)*sp,life:0,max:.5+Math.random()*.7,size:.3+Math.random()*.4,type:'fire'});}}}
+      if(all&&!P.ko&&P.gt>.3){P.ko=true;const b=puzRivalBoom(P);S.boom={x:b.x,y:0,z:b.z};S.boomT=0;S.notation=P.finalNote||'';S.resultAt=2.6;}}
     if(P.lose&&phase==='boom'&&S.boomT>.6&&(!A||A.i>=A.steps.length)){const Lz=P.lose;Lz.t+=dt;
       if(!Lz.gar){Lz.gar=[];const hs=[0,0,0,0,0,0];for(const pc of S.pieces)if(pc.block&&pc.side==='p'&&!pc.flying)hs[pc.c]=Math.max(hs[pc.c],pc.pr+1);
         for(let c=0;c<6;c++)for(let r=hs[c];r<13;r++){const pc={k:'邪',kind:4,block:true,side:'p',c,pr:r,x:P.px0+(c+.5)*P.cell,y:6+(r-hs[c])*1.1+Math.random()*.6,z:P.z0+(r+.5)*P.cell,size:P.cell*.95,enemy:true,king:false,vx:0,vy:0,vz:0,rot:0,vr:0,flying:false};S.pieces.push(pc);Lz.gar.push(pc);}}
       for(const pc of Lz.gar)if(pc.y>0)pc.y=Math.max(0,pc.y-dt*16);
-      if(Lz.t>1.2){Lz.v=(Lz.v||0)+dt*2600;Lz.dy=(Lz.dy||0)+Lz.v*dt;if(!Lz.thud){Lz.thud=true;beep(180,.35,'square',.05,-130);}}}}
+      if(Lz.t>1.2){Lz.v=(Lz.v||0)+dt*2600;Lz.dy=(Lz.dy||0)+Lz.v*dt;if(!Lz.thud){Lz.thud=true;beep(180,.35,'square',.05,-130);}}
+      if(Lz.t>2.2&&!Lz.rivalBoom){Lz.rivalBoom=true;puzRivalBoom(P);}}}
   if(S.eye){const E=S.eye,K=E.K;
     if((phase==='aim'||phase==='power'||phase==='flight')&&!K.flying&&!K.blown){E.t+=dt;
       if(E.blank&&E.t>=EYE_GAP){E.blank=false;E.t=0;E.step++;K.k=eyeNext(E);K.size=EYE_SIZE[E.step%EYE_SIZE.length];}
@@ -1194,7 +1194,7 @@ const BRIDE_TALK=[[0,'これでよかったのよ'],[0,'私さえ我慢すれば
 const BRIDE_WIN=[[0,'…先輩？']];
 const BRIDE_MISS=[[0,'…さようなら、先輩']];
 /* ---------- ボクシング: a behind-your-back boxing ring. Dodge the king's punch, then land a 将棋パンチ while he is dazed ---------- */
-const BOX_COACH_START=['いいか王よ！ パンチをよけたら、すかさず将棋パンチだ！','グローブが光ったら、反対側へよけろ！ 将棋もボクシングも、受けが大事だ！','お前は歩だった頃から、俺が育ててきたんだ…！ 行けっ！','試合が終わったら、みんなでラーメンだ！ 大盛りだぞ！'];
+const BOX_COACH_START=['パンチをよけたら、すかさず将棋パンチだ！','グローブが光ったら、反対側へよけろ！ 将棋もボクシングも、受けが大事だ！','お前は歩だった頃から、俺が育ててきたんだ…！ 行けっ！','試合が終わったら、みんなで将棋ラーメンだ！ 大盛りだぞ！'];
 const BOX_COACH_HIT=['効いてるぞ！ あと2発だ！','あと1発！ 決めろーっ！'];
 const BOX_COACH_OPEN=['今だ！ 打てーっ！','スキありだ！ 将棋パンチ！','ここで決めろ！ 王手だ！'];
 function boxSet(B,st,dur){B.st=st;B.t=0;B.dur=dur;}
@@ -1219,14 +1219,14 @@ function drawCoach(c){
   ctx.save();ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px+pw,py);ctx.lineTo(px+pw-ph*.3,py+ph);ctx.lineTo(px,py+ph);ctx.closePath();
   const g=ctx.createLinearGradient(px,0,px+pw,0);g.addColorStop(0,'#c9201c');g.addColorStop(1,'#ff7b2b');ctx.fillStyle=g;ctx.fill();ctx.lineWidth=4;ctx.strokeStyle='#fff';ctx.stroke();ctx.save();ctx.clip();
   ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=2;for(let i=0;i<10;i++){const yy=py+((i*37)%100)/100*ph,len=pw*.3,xx=((i*131-time*900)%(pw+len)+pw+len)%(pw+len)+px-len;ctx.beginPath();ctx.moveTo(xx,yy);ctx.lineTo(xx+len,yy);ctx.stroke();}ctx.restore();
-  // と金コーチ: a promoted pawn with a headband and a towel
+  // 将棋博士: a promoted pawn with a headband and a towel
   const s=ph*.82,cx=px+s*.62,base=py+ph*.96,cim=gImg('coach');
   if(cim){const iw=s*.95,ix=cx-iw/2,ih=iw*cim.naturalHeight/cim.naturalWidth;ctx.save();ctx.beginPath();ctx.rect(ix,py+5,iw,ph-10);ctx.clip();ctx.drawImage(cim,ix,py+5,iw,ih);ctx.restore();ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.strokeRect(ix,py+5,iw,ph-10);}
   else{drawPieceAt(cx,base,s,'と',-.08,false,false,false);
   ctx.fillStyle='#fff';ctx.fillRect(cx-s*.4,base-s*.86,s*.8,s*.1);ctx.fillStyle='#d01818';ctx.font='800 '+s*.08+'px '+F_PIECE;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('必勝',cx,base-s*.81);
   ctx.fillStyle='#f4f4f0';ctx.beginPath();ctx.moveTo(cx-s*.46,base-s*.25);ctx.quadraticCurveTo(cx,base-s*.05,cx+s*.46,base-s*.25);ctx.lineTo(cx+s*.38,base-s*.05);ctx.quadraticCurveTo(cx,base+s*.1,cx-s*.38,base-s*.05);ctx.closePath();ctx.fill();}
   const tx=px+s*1.25,fs=Math.min(big?24:22,W*.042),n=Math.min(c.line.length,Math.floor(Math.max(0,c.t-.15)*28));
-  ctx.textAlign='left';ctx.fillStyle='#ffe14d';ctx.font='400 '+fs*.8+'px '+F_DISP;ctx.fillText('と金コーチ',tx,py+fs*1.1);
+  ctx.textAlign='left';ctx.fillStyle='#ffe14d';ctx.font='400 '+fs*.8+'px '+F_DISP;ctx.fillText('将棋博士',tx,py+fs*1.1);
   ctx.fillStyle='#fff';ctx.font=fs+'px '+F_DOT;const words=c.line.slice(0,n),maxW=pw-(tx-px)-ph*.35;let line='',y=py+fs*2.5;for(const ch of words){if(ctx.measureText(line+ch).width>maxW&&!'、。，！？」ー…'.includes(ch)){ctx.fillText(line,tx,y);line='';y+=fs*1.3;}line+=ch;}ctx.fillText(line,tx,y);
   ctx.restore();
 }
@@ -1933,7 +1933,11 @@ function puzLayout(){
   for(let i=0;i<2;i++){avail=H-safeB-16-Math.max(fanR+cs*1.5,gh+20);cs=Math.max(8,Math.min((avail-top0)/12,(hl-top0)/(12+lo),(W-14)/14));}
   const room=Math.min(avail,hl-lo*cs)-(top0+cs*12),top=top0+Math.max(0,room*.5),bottom=top+cs*12,k=cs/P.cell,z0=P.z0;
   return{cs,k,top,bottom,launch:bottom+(z0-.5)*k,X:x=>W/2+x*k,Y:z=>bottom-(z-z0)*k};}
-function puzPortrait(){const gh=Math.min(H*.26,200),w=Math.min(W*.24,150),h=w*1.15;return{x:W-16-w,y:H-safeB-16-gh-18-h,w,h};}
+function puzRivalBoom(P){const L=puzLayout(),PB=puzPortrait(),R=P.rival,bx=(PB.x+PB.w/2-W/2)/L.k,bz=P.z0+(L.bottom-(PB.y+PB.h*.6))/L.k;blow(R,R.x-.6,0,R.z+.3,.8);P.rboom=time;
+  sfx.boom();S.shake=1.2;S.flash=1;for(let i=0;i<110;i++){const a=Math.random()*6.283,sp=2+Math.random()*7;S.parts.push({x:bx,y:.3,z:bz,vx:Math.cos(a)*sp,vy:Math.random()*5,vz:Math.sin(a)*sp,life:0,max:.6+Math.random()*.7,size:.5+Math.random()*.6,type:i%4?'fire':'smoke'});}return{x:bx,z:bz};}
+function puzPortrait(){const L=puzLayout(),gh=Math.min(H*.26,200),gTop=H-safeB-16-gh,right=W/2+7*L.cs+10,room=W-16-right;
+  if(room>=70){const w=Math.min(room,120),h=w*1.15;return{x:W-16-w,y:Math.max(L.top,gTop-14-h),w,h};}
+  const y=L.bottom+8,h=Math.max(46,Math.min(gTop-10-y,100)),w=h/1.15;return{x:W-16-w,y,w,h};}
 function puzTile(x,y,s,kind,ch,flash,rot,al){
   ctx.save();ctx.globalAlpha=al==null?1:al;ctx.translate(x,y);if(rot)ctx.rotate(rot);const h=s/2,r=s*.18,col=flash?'#ffffff':PUZ_COL[kind];
   ctx.beginPath();ctx.moveTo(-h+r,-h);ctx.arcTo(h,-h,h,h,r);ctx.arcTo(h,h,-h,h,r);ctx.arcTo(-h,h,-h,-h,r);ctx.arcTo(-h,-h,h,-h,r);ctx.closePath();
@@ -1947,9 +1951,10 @@ function drawPuzzle2D(){
   const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#140838');g.addColorStop(1,'#3a0f5e');ctx.fillStyle=g;ctx.fillRect(-20,-20,W+40,H+40);
   ctx.strokeStyle='rgba(255,90,200,.12)';ctx.lineWidth=1;ctx.beginPath();const off=(time*18)%40;for(let x=-40+off;x<W+40;x+=40){ctx.moveTo(x,0);ctx.lineTo(x,H);}for(let y=-40+off;y<H+40;y+=40){ctx.moveTo(0,y);ctx.lineTo(W,y);}ctx.stroke();
   // behind your well: your king, flat out and seeing stars (revealed when the well drops away)
-  if(Lz&&Lz.t>1.1){const cx=X(P.px0)+cs*3,cy=(top+bottom)/2+cs*2.5;drawPieceAt(cx+cs*1.1,cy,cs*2.6,'王',Math.PI/2*.94,false,false,false);
+  if(Lz&&Lz.t>1.1){const cx=X(P.px0)+cs*3,cy=(top+bottom)/2+cs*2.5,kt=Lz.t-1.25;
+    {drawPieceAt(cx+cs*1.1,cy,cs*2.6,'王',Math.PI/2*.94,false,false,false);
     ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='400 '+cs*.7+'px '+F_DISP;for(let i=0;i<3;i++){const an=time*4+i*2.094;ctx.fillStyle='#ffe14d';ctx.fillText('★',cx+Math.cos(an)*cs*1.4,cy-cs*1.9+Math.sin(an)*cs*.35);}
-    const fz=cs*.9;ctx.font='400 '+fz+'px '+F_DISP;ctx.lineWidth=fz*.15;ctx.lineJoin='round';ctx.strokeStyle='#1a0830';const wx=cx+cs*.2+Math.sin(time*3)*cs*.15;ctx.strokeText('きゅ～',wx,cy-cs*3.2);ctx.fillStyle='#ffffff';ctx.fillText('きゅ～',wx,cy-cs*3.2);ctx.restore();}
+    const fz=cs*.9;ctx.font='400 '+fz+'px '+F_DISP;ctx.lineWidth=fz*.15;ctx.lineJoin='round';ctx.strokeStyle='#1a0830';const wx=cx+cs*.2+Math.sin(time*3)*cs*.15;ctx.strokeText('きゅ～',wx,cy-cs*3.2);ctx.fillStyle='#ffffff';ctx.fillText('きゅ～',wx,cy-cs*3.2);ctx.restore();}}
   // the two wells
   for(const side of['p','r']){const x0=X(side==='p'?P.px0:P.rx0),w=cs*6,me=side==='p';ctx.save();if(me)ctx.translate(0,dy);
     ctx.fillStyle=me?'#9fd0ff':'#ff9fb8';ctx.fillRect(x0-5,top-5,w+10,bottom-top+10);
@@ -1984,6 +1989,10 @@ function drawPuzzle2D(){
   // blast: fire and smoke particles, and a ring
   for(const q of S.parts){if(q.type!=='fire'&&q.type!=='smoke')continue;const al=Math.max(0,1-q.life/q.max),r=q.size*k*.45*(q.type==='smoke'?1.4:1);ctx.fillStyle=q.type==='fire'?'rgba(255,'+(140+Math.floor(al*100))+',40,'+al+')':'rgba(60,50,70,'+al*.5+')';ctx.beginPath();ctx.arc(X(q.x),Y(q.z)-q.y*k*.3,r,0,6.283);ctx.fill();}
   if(S.boom&&S.boomT<.5){const b=S.boom,r=cs*(.6+S.boomT*5);ctx.strokeStyle='rgba(255,230,140,'+(1-S.boomT*2)+')';ctx.lineWidth=4;ctx.beginPath();ctx.arc(X(b.x),Y(b.z),r,0,6.283);ctx.stroke();}
+  if(P.rboom!=null&&time-P.rboom<1){const t=time-P.rboom,PB=puzPortrait(),cx=PB.x+PB.w/2,cy=PB.y+PB.h*.6,r=PB.w*(.35+ease(Math.min(1,t/.35))*1.1),al=Math.max(0,1-Math.max(0,t-.35)/.65);ctx.save();ctx.globalAlpha=al;
+    const g=ctx.createRadialGradient(cx,cy,0,cx,cy,r);g.addColorStop(0,'#fffbe0');g.addColorStop(.3,'#ffd54f');g.addColorStop(.65,'#ff5a1f');g.addColorStop(1,'rgba(120,20,0,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,r,0,6.283);ctx.fill();
+    ctx.strokeStyle='rgba(255,240,180,.9)';ctx.lineWidth=5;ctx.beginPath();ctx.arc(cx,cy,r*(1.1+t*.8),0,6.283);ctx.stroke();
+    const fs=PB.w*.55*(1+Math.max(0,.2-t)*2);ctx.font='400 '+fs+'px '+F_DISP;ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';ctx.lineWidth=fs*.14;ctx.strokeStyle='#3a0a00';ctx.strokeText('爆',cx,cy);ctx.fillStyle='#fff3c4';ctx.fillText('爆',cx,cy);ctx.restore();}
   // the rival's taunts, in a bubble inside the top of their well
   const T=S.talk,ln=T&&T.lines[T.i];if(ln&&phase!=='story'){const a=Math.min(1,T.t/.15)*(T.t>2.1&&!T.react?Math.max(0,1-(T.t-2.1)/.3):1);if(a>0){
     const PB2=puzPortrait(),fz=Math.max(14,Math.min(20,cs*.62)),by=PB2.y-fz*1.7;ctx.save();ctx.globalAlpha=a;ctx.font='700 '+fz+'px '+F_BODY;const tw=ctx.measureText(ln[1]).width+fz*1.2,bx=Math.max(8+tw/2,PB2.x+PB2.w-tw/2);
