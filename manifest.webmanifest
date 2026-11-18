@@ -1,7 +1,7 @@
 {
   "name": "令和将棋",
   "short_name": "令和将棋",
-  "description": "爆の駒を投げて玉将をふっとばす、一発勝負の将棋バカゲー。",
+  "description": "令和最新将棋ゲームの決定版",
   "lang": "ja",
   "start_url": "./",
   "scope": "./",
